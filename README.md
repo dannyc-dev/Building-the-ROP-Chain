@@ -8,7 +8,7 @@ This is the second part to our Smashing the Stack series. In [Part 1](https://ma
 
 ![alt text](screenshot/15.png)
 
-It's important that we fully understand how we developed the exploit in Part 1 because we will be building off it in this writeup and adding in our ROP chain to invoke our shell and get our flag (remember we're using the SECCON CTF [baby_stack](https://github.com/MalwareSec/Stack-Based-Buffer-Overflow/blob/master/baby_stack-7b078c99bb96de6e5efc2b3da485a9ae8a66fd702b7139baf072ec32175076d8.dms) challenge)
+It's important that we fully understand how we developed the exploit in Part 1 because we will be building off it in this writeup and add in our ROP chain to invoke our shell and get our flag (remember we're using the SECCON CTF [baby_stack](https://github.com/MalwareSec/Stack-Based-Buffer-Overflow/blob/master/baby_stack-7b078c99bb96de6e5efc2b3da485a9ae8a66fd702b7139baf072ec32175076d8.dms) challenge)
 
 This is how our exploit looks so far: 
 
@@ -25,12 +25,12 @@ In our final payload we will change p64(0xdeadbeef) with our ROP chain to bypass
 
 ![alt text](screenshot/3.png)
 
-Let's talk a bit about why we need this method. So like we briefly discussed in Part 1, we know we have a GO executable with DEP/NX enabled so a traditional ret2libc method and traditional buffer overflows where you set RIP to RSP+offset and immediately run your shellcode won't work. To get around this we use a clever method called Return Oriented Programming (ROP).
+Let's talk a bit about why we need this method. So like we briefly discussed in Part 1, we know we have a GO executable with DEP/NX enabled so a traditional ret2libc method or traditional buffer overflows where you set RIP to RSP+offset and immediately run your shellcode won't work. To get around this we use a clever method called Return Oriented Programming (ROP).
 
 This writeup is not meant to be a tutorial on Return Oriented Programming (there are much better resources online than anything I could write) but I do want to make sure that we're on the same page about some key concepts and terminology so that our example further down makes sense. So the main idea behind Return Oriented Programming is the utilization of small instruction sequences available in either the binary or libraries linked to the application called gadgets. 
 
     These gadgets are chained together via the stack, which contains your exploit payload. Each entry in the stack corresponds
-    to the address of the next ROP gadget. Each gadget is in the form of instr1; instr2; instr3; ... instrN; ret, 
+    to the address of the next ROP gadget. Each gadget is in the form of instr1; instr2; instr3; ...instrN; ret, 
     so that the ret will jump to the next address on the stack after executing the instructions, thus chaining the gadgets
     together.
     
@@ -40,13 +40,33 @@ There are multiple things that we can do with gadgets. Basically we can execute 
     
 This will move the value located in the address stored in RAX, to RCX. 
 
-Another common need when developing exploits is storing into memory. An example could be: 
+Another common need when developing exploits is storing into memory. Some examples could be: 
 
     MOV [RDI], RAX; ret
+    MOV [RAX], RCX; ret
 
-This will store the value in RAX to the memory address at RDI. We will be using a gadget like this in our example below. 
+In the first example will store the value in RAX to the memory address at RDI. We will be using a gadget like this in our example below. 
 
+The [pwntools](https://github.com/Gallopsled/pwntools) ROPgadget library makes it easy for us to enumarate and search through available ROP gadgets (gdb-peda is also a great tool):
 
+    ROPgadet --binary baby_stack-7b078c99bb96de6e5efc2b3da485a9ae8a66fd702b7139baf072ec32175076d8 | less
 
+![alt text](screenshot/rop4.png)
 
+You'll notice we have 6309 unique gadgets to pick from so we want to make sure we understand which ones we need to complete our exploit. 
 
+So let's jump back into our development. First we want to understand how we will be calling our shell. We do this by using syscall which takes a few arguments: 
+
+    syscall(RAX, RDI, RSI, RDX)
+    
+RAX will hold the system call number where we will call execve (#59 or **0x3b** in hex) after we clear the registers. Linux syscall tables allow us to call various functions like socket or _sysctl.
+
+RDI will hold a pointer to bin/sh. 
+
+RSI and RDX are additional arguments that we will zero out.
+
+To do this we want to check our section permissions and see that we can write into the .bss section (located adjacent to the data segment)
+
+![alt text](screenshot/rop5.png)
+
+Using the elfheader flag we find that the .bss segment starts at 0x59f920. 

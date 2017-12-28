@@ -1,37 +1,10 @@
-## Welcome to GitHub Pages
+# Building the ROP Chain
 
-You can use the [editor on GitHub](https://github.com/MalwareSec/Building-the-ROP-Chain/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+### By: Danny Colmenares 
+#### Twitter: @malware_sec
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+#### Welcome back! 
+This is the second part to our Smashing the Stack series. Please look over [Part 1](https://malwaresec.github.io/Stack-Based-Buffer-Overflow/) if you haven't already.
 
-### Markdown
+In Part 1 we focused on controlling the execution flow of our executable, it's really important that you fully understand how we developed that exploit because we will be using it in this writeup and add in our ROP chain to invoke our shell and get our flag (remember we're using the SECCON CTF [baby_stack](https://github.com/MalwareSec/Stack-Based-Buffer-Overflow/blob/master/baby_stack-7b078c99bb96de6e5efc2b3da485a9ae8a66fd702b7139baf072ec32175076d8.dms) challenge)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/MalwareSec/Building-the-ROP-Chain/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.

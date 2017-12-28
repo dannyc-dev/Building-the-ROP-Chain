@@ -31,9 +31,12 @@ Let's talk a bit about why we need this method. So like we briefly discussed in 
 
 This writeup is not meant to be a tutorial on Return Oriented Programming (there are much better resources online than anything I could write) but I do want to make sure that we're on the same page about some key concepts and terminology so that our example further down makes sense. So the main idea behind Return Oriented Programming are the utilization of small instruction sequences available in either the binary or libraries linked to the application called gadgets. 
 
-    These gadgets are chained together via the stack, which contains your exploit payload. Each entry in the stack corresponds  to the address of the next ROP gadget. Each gadget is in the form of instr1; instr2; instr3; ... instrN; ret, so that the ret   will jump to the next address on the stack after executing the instructions, thus chaining the gadgets together.
+    These gadgets are chained together via the stack, which contains your exploit payload. Each entry in the stack corresponds
+    to the address of the next ROP gadget. Each gadget is in the form of instr1; instr2; instr3; ... instrN; ret, 
+    so that the ret will jump to the next address on the stack after executing the instructions, thus chaining the gadgets
+    together.
     
-There are multiple things we can do with gadgets. Basically we can execute any instruction if the right instruction sequence is found. For example, if we want to load from memory we could use: 
+There are multiple things that we can do with gadgets. Basically we can execute any instruction if the right instruction sequence is found. For example, if we want to load from memory we could use: 
 
     MOV RCX, [RAX]; ret
     

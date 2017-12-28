@@ -1,6 +1,7 @@
 # Smashing the Stack Part 2
 # Building the ROP Chain
-### By: Danny Colmenares Twitter: @malware_sec
+### By: Danny Colmenares 
+#### Twitter: @malware_sec
 
 ## Welcome back! 
 This is the second part to our Smashing the Stack series. In [Part 1](https://malwaresec.github.io/Stack-Based-Buffer-Overflow/) we focused on controlling execution flow and overwriting our return address using **free and open source tools**: 

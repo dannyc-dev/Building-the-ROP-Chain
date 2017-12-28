@@ -45,7 +45,7 @@ Another common need when developing exploits is storing into memory. Some exampl
     MOV [RDI], RAX; ret
     MOV [RAX], RCX; ret
 
-In the first example will store the value in RAX to the memory address at RDI. We will be using a gadget like this in our example below. 
+The first example will store the value in RAX to the memory address at RDI. We will be using a gadget like this in our example below. 
 
 The [pwntools](https://github.com/Gallopsled/pwntools) ROPgadget library makes it easy for us to enumarate and search through available ROP gadgets (gdb-peda is also a great tool):
 
@@ -59,13 +59,13 @@ So let's jump back into our development. First we want to understand how we will
 
     syscall(RAX, RDI, RSI, RDX)
     
-RAX will hold the system call number where we will call execve (#59 or **0x3b** in hex) after we clear the registers. Linux syscall tables allow us to call various functions like socket or _sysctl.
+RAX (Accumulator register) will hold the system call number where we will call execve (#59 or **0x3b** in hex) after we clear the registers. Linux syscall table allows us to also call various other useful functions like socket or _sysctl.
 
-RDI will hold a pointer to bin/sh. 
+The RDI (Destination Index register) argument will point to bin/sh. 
 
-RSI and RDX are additional arguments that we will zero out.
+The RSI and RDX (Source Index register and Data register) are additional arguments that we will zero out.
 
-To do this we want to check our section permissions and see that we can write into the .bss section (located adjacent to the data segment)
+Since PIE isn't enabled we know that the .bss address won't change. So now we want to check our section permissions and check our .bss section address (located adjacent to the data segment).
 
 ![alt text](screenshot/rop5.png)
 

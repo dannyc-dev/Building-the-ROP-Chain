@@ -38,7 +38,13 @@ There are multiple things that we can do with gadgets. Basically we can execute 
 
     MOV RCX, [RAX]; ret
     
-This will move the value located in the address stored in RAX, to RCX. We will be using a gadget like this in our example below. 
+This will move the value located in the address stored in RAX, to RCX. 
+
+Another common need when developing exploits is storing into memory. An example could be: 
+
+    MOV [RDI], RAX; ret
+
+This will store the value in RAX to the memory address at RDI. We will be using a gadget like this in our example below. 
 
 
 

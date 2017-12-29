@@ -126,7 +126,7 @@ But instead of RAX and RDI we need RDX and RSI, let's search for possible gadget
 
 ![alt text](screenshot/rop11.png)
 
-Now we just need to set them to zero. This is what our exploit looks like: 
+Now we just need to set them to zero (remember to set RAX to a valid address before using the POP RDX ; ret gadget - because of the second instruction). This is what our exploit looks like: 
 
 ![alt text](screenshot/rop12.png)
 
@@ -140,3 +140,8 @@ Let's complete our exploit and run it:
 
 ![alt text](screenshot/rop15.png)
 
+Wohoo - we have now successfully invoked our shell using our ROP chain. 
+
+![alt text](screenshot/meme.png)
+
+Thanks again to SECCON for creating such a fun challenge! See you next time. 

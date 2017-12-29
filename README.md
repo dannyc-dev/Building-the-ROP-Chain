@@ -119,6 +119,17 @@ But instead of RAX and RDI we need RDX and RSI, let's search for possible gadget
 
 ![alt text](screenshot/rop11.png)
 
+Now we just need to set them to zero. This is what our exploit now looks like: 
 
+![alt text](screenshot/rop12.png)
 
+Our final steps are to set 0x3b (execve syscall) into RAX (POP RAX ; ret) and then invoke our syscall (syscall ; ret): 
+
+![alt text](screenshot/rop13.png)
+
+Let's complete our exploit and run it: 
+
+![alt text](screenshot/rop14.png)
+
+![alt text](screenshot/rop15.png)
 

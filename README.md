@@ -110,5 +110,15 @@ We have to remember to set RAX to a valid address before we use the second gadge
 
 ![alt text](screenshot/rop10.png)
 
-Let's clear our RSI and RDX registers now. 
+Let's clear our RSI and RDX registers now (set the registers to zero). We can use the same gadgets we described above:
+
+    POP RAX; ret
+    POP RDI; ret
+
+But instead of RAX and RDI we need RDX and RSI, let's search for possible gadgets we can use:
+
+![alt text](screenshot/rop11.png)
+
+
+
 

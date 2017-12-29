@@ -59,7 +59,13 @@ So let's jump back into our development. First we want to understand how we will
 
     syscall(RAX, RDI, RSI, RDX)
     
-The RAX (Accumulator register) will hold the system call number where we will call execve (which is #59 or **0x3b** in hexadecimal) after we clear the registers. Linux syscall table allows us to also call various other useful functions like socket or _sysctl.
+**Remember** syscalls are architecture specific. For example, on x86:
+
+    First you push parameters on the stack
+    Then the syscall number gets moved into EAX (MOV EAX, syscall_number)
+    Last you invoke the system call with SYSENTER / INT 80
+    
+The RAX (Accumulator register) will hold the system call number where we will call execve (number 59 or **0x3b** in hexadecimal) after we clear the registers. Linux syscall table allows us to also call various other useful functions like socket or _sysctl.
 
 The RDI (Destination Index register) argument will point to bin/sh. 
 

@@ -67,11 +67,11 @@ So let's jump back into our development. First we want to understand how we will
     
 The RAX (Accumulator register) will hold the system call number where we will call execve (number 59 or **0x3b** in hexadecimal). Linux syscall table allows us to also call various other useful functions like socket or _sysctl.
 
-The RDI (Destination Index register) argument will point to bin/sh. 
+The RDI (Destination Index register) argument will point to /bin/sh. 
 
 The RSI and RDX (Source Index register and Data register) are additional arguments that we will zero out.
 
-Since PIE (Position Independent Executable) isn't enabled we know that the .bss address won't change from run to run. So this is a great place to store bin/sh in memeory. Let's check our section permissions and check our .bss section address (located adjacent to the data segment).
+Since PIE (Position Independent Executable) isn't enabled we know that the .bss address won't change from run to run. So this is a great place to store /bin/sh in memeory. Let's check our section permissions and check our .bss section address (located adjacent to the data segment).
 
 ![alt text](screenshot/rop5.png)
 
@@ -81,7 +81,7 @@ Using the elfheader flag we find that the .bss segment starts at 0x59f920. This 
 
 The last thing we need to do to complete our exploit is make our ROP chain by searching for the gadgets we need. 
 
-Let's start with setting bin/sh to our .bss address. We need to **store** this address in memory (RDI) so we need one of the store gadgets we listed above, specifically:
+Let's start with setting /bin/sh to our .bss address. We need to **store** this address in memory (RDI) so we need one of the store gadgets we listed above, specifically:
 
     MOV [RDI], RAX; ret
     
@@ -100,13 +100,16 @@ This will save a value on the stack to a register using the POP instruction for 
 
 ![alt text](screenshot/rop9.png)
 
-We now have everything we need to store bin/sh into our RDI register. The gadgets we will use to store bin/sh in RDI are: 
+We now have everything we need to store /bin/sh into our RDI register. The gadgets we will use to store /bin/sh in RDI are: 
 
     POP RDI ; or byte ptr [RAX + 0x39], cl ; ret
     POP RAX ; ret
     MOV qword ptr [RDI], RAX ; ret
     
-Two things to remember here: First, we have set RAX to a valid address before we use the first gadget or else we segfault (because the second instruction) and second, we have to terminate our bin/sh with a null byte to terminate our string. 
+Two things to remember here: 
+
+* First, we have set RAX to a valid address before we use the first gadget or else we segfault (because the second instruction) 
+* Second, we have to terminate our /bin/sh with a null byte to terminate our string. 
 
 To summarize what we're doing here, we set RAX to a valid address (our .bss address) then POP our .bss address into RDI and POP '/bin/sh\x00' into RAX. Finally we can MOV our RAX ('/bin/sh\x00') into our RDI (.bss address). 
 

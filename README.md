@@ -67,6 +67,6 @@ The RSI and RDX (Source Index register and Data register) are additional argumen
 
 Since PIE isn't enabled we know that the .bss address won't change. So now we want to check our section permissions and check our .bss section address (located adjacent to the data segment).
 
-![alt text](screenshot/rop6.png)
+![alt text](screenshot/rop5.png)
 
 Using the elfheader flag we find that the .bss segment starts at 0x59f920. 

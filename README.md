@@ -79,9 +79,36 @@ Using the elfheader flag we find that the .bss segment starts at 0x59f920. This 
 
 ![alt text](screenshot/rop7.png)
 
-The last thing we need to do to complete our exploit is make our ROP chain by searching for the gadgets we need. Let's start with setting bin/sh to our .bss address. We need to **store** this address in memory (RDI) so we need one of the store gadgets we listed above, specifically:
+The last thing we need to do to complete our exploit is make our ROP chain by searching for the gadgets we need. 
+
+Let's start with setting bin/sh to our .bss address. We need to **store** this address in memory (RDI) so we need one of the store gadgets we listed above, specifically:
 
     MOV [RDI], RAX; ret
     
 ![alt text](screenshot/rop8.png)
+
+When we search for this gadget we get
+
+    MOV qword ptr [RDI], RAX ; ret
+    
+Perfect, now we just need to load our constants into the registers so gadgets like this would do the trick:
+
+    POP RAX; ret
+    POP RDI; ret
+
+This will save a value on the stack to a register using the POP instruction for later use. Let's grep for each of these:
+
+![alt text](screenshot/rop9.png)
+
+We now have everything we need to store bin/sh into our RDI register. The gadgets we will use to store bin/sh in RDI are: 
+
+    POP RAX ; ret
+    POP RDI ; or byte ptr [RAX + 0x39], cl ; ret
+    MOV qword ptr [RDI], RAX ; ret
+    
+We have to remember to set RAX to a valid address before we use the second gadget or else we segfault (because the second instruction) and terminate our bin/sh with a null byte (to terminate our string). Our exploit now looks like this:
+
+![alt text](screenshot/rop10.png)
+
+Let's clear our RSI and RDX registers now. 
 

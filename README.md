@@ -30,7 +30,7 @@ Let's talk a bit about why we need this method. So like we briefly discussed in 
 This writeup is not meant to be a tutorial on Return Oriented Programming (there are much better resources online than anything I could write) but I do want to make sure that we're on the same page about some key concepts and terminology so that our example further down makes sense. So the main idea behind Return Oriented Programming is the utilization of small instruction sequences available in either the binary or libraries linked to the application called gadgets. 
 
     These gadgets are chained together via the stack, which contains your exploit payload. Each entry in the stack corresponds
-    to the address of the next ROP gadget. Each gadget is in the form of instr1; instr2; instr3; ...instrN; ret, 
+    to the address of the next ROP gadget. Each gadget is in the form of instr1; instr2; instr3; ... instrN; ret, 
     so that the ret will jump to the next address on the stack after executing the instructions, thus chaining the gadgets
     together.
     
@@ -65,8 +65,17 @@ The RDI (Destination Index register) argument will point to bin/sh.
 
 The RSI and RDX (Source Index register and Data register) are additional arguments that we will zero out.
 
-Since PIE isn't enabled we know that the .bss address won't change. So now we want to check our section permissions and check our .bss section address (located adjacent to the data segment).
+Since PIE (Position Independent Executable) isn't enabled we know that the .bss address won't change. So now we want to check our section permissions and check our .bss section address (located adjacent to the data segment).
 
 ![alt text](screenshot/rop5.png)
 
-Using the elfheader flag we find that the .bss segment starts at 0x59f920. Now we can start searching for ROP gadgets that we need to call our shell.
+Using the elfheader flag we find that the .bss segment starts at 0x59f920. This is how our exploit looks so far: 
+
+![alt text](screenshot/rop7.png)
+
+The last thing we need to do to complete our exploit is make our ROP chain by searching for the gadgets we need. Let's start with setting bin/sh to our .bss address. We need to **store** this address in memory (RDI) so we need one of the store gadgets we listed above, specifically:
+
+    MOV [RDI], RAX; ret
+    
+![alt text](screenshot/rop8.png)
+

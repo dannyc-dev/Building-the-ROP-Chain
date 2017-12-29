@@ -4,7 +4,7 @@
 #### Twitter: @malware_sec
 
 ## Welcome back! 
-This is the second part to our Smashing the Stack series. In [Part 1](https://malwaresec.github.io/Stack-Based-Buffer-Overflow/) we focused on controlling execution flow and overwriting our return address using **free and open source tools**: 
+This is the second part to our Smashing the Stack series. In [Part 1](https://malwaresec.github.io/Stack-Based-Buffer-Overflow/) we focused on controlling execution flow and overwriting our return address using **free and open source tools**. In [Part 1](https://malwaresec.github.io/Stack-Based-Buffer-Overflow/) we were able to overwrite the return address with 0xdeadbeef meaning we had full control over execution, now let's use this to call our shell. 
 
 ![alt text](screenshot/15.png)
 
@@ -27,12 +27,13 @@ In our final payload we will change p64(0xdeadbeef) with our ROP chain to bypass
 
 Let's talk a bit about why we need this method. So like we briefly discussed in Part 1, we know we have a GO executable with DEP/NX enabled so a traditional ret2libc method or traditional buffer overflows where you set RIP to RSP+offset and immediately run your shellcode won't work. To get around this we use a clever method called Return Oriented Programming (ROP).
 
-This writeup is not meant to be a tutorial on Return Oriented Programming (there are much better resources online than anything I could write) but I do want to make sure that we're on the same page about some key concepts and terminology so that our example further down makes sense. So the main idea behind Return Oriented Programming is the utilization of small instruction sequences available in either the binary or libraries linked to the application called gadgets. 
+This writeup is **not** meant to be a tutorial on Return Oriented Programming (there are much better resources online than anything I could write) but I do want to make sure that we're on the same page about some key concepts and terminology so that our example further down makes sense. So the main idea behind Return Oriented Programming is to utilize small instruction sequences available in either the binary or libraries linked to the application called gadgets. 
 
-    These gadgets are chained together via the stack, which contains your exploit payload. Each entry in the stack corresponds
-    to the address of the next ROP gadget. Each gadget is in the form of instr1; instr2; instr3; ... instrN; ret, 
-    so that the ret will jump to the next address on the stack after executing the instructions, thus chaining the gadgets
-    together.
+These gadgets are chained together via the stack, which contains your exploit payload. Each entry in the stack corresponds to the address of the next ROP gadget. Each gadget is in the form of
+
+    instr1; instr2; instr3; ... instrN; ret
+    
+The ret will jump to the next address on the stack after executing the instructions, thus chaining the gadgets together.
     
 There are multiple things that we can do with gadgets. Basically we can execute any instruction if the right instruction sequence is found. For example, if we want to load from memory we could use: 
 
@@ -40,12 +41,12 @@ There are multiple things that we can do with gadgets. Basically we can execute 
     
 This will move the value located in the address stored in RAX, to RCX. 
 
-Another common need when developing exploits is storing into memory. Some examples could be: 
+Another common gadget is storing into memory. For example: 
 
     MOV [RDI], RAX; ret
     MOV [RAX], RCX; ret
 
-The first example will store the value in RAX to the memory address at RDI. We will be using a gadget like this in our example below. 
+The first example will store the value in RAX to the memory address at RDI. We will use a gadget like this in our example below. 
 
 The [pwntools](https://github.com/Gallopsled/pwntools) ROPgadget library makes it easy for us to enumarate and search through available ROP gadgets (gdb-peda is also a great tool):
 
@@ -55,13 +56,13 @@ The [pwntools](https://github.com/Gallopsled/pwntools) ROPgadget library makes i
 
 You'll notice we have 6309 unique gadgets to pick from so we want to make sure we understand which ones we need to complete our exploit. 
 
-So let's jump back into our development. First we want to understand how we will be calling our shell. We do this by using syscall which takes a few arguments: 
+So let's jump back into our development. First we want to understand how we will be calling our shell. We will do this by using syscall which takes a few arguments: 
 
     syscall(RAX, RDI, RSI, RDX)
     
-RAX (Accumulator register) will hold the system call number where we will call execve (#59 or **0x3b** in hex) after we clear the registers. Linux syscall table allows us to also call various other useful functions like socket or _sysctl.
+RAX (Accumulator register) which will hold the system call number where we will call execve (which is #59 or **0x3b** in hexadecimal) after we clear the registers. Linux syscall table allows us to also call various other useful functions like socket or _sysctl.
 
-The RDI (Destination Index register) argument will point to bin/sh. 
+The RDI (Destination Index register) argument which will point to bin/sh. 
 
 The RSI and RDX (Source Index register and Data register) are additional arguments that we will zero out.
 

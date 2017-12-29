@@ -4,7 +4,7 @@
 #### Twitter: @malware_sec
 
 ## Welcome back! 
-This is the second part to our Smashing the Stack series. In [Part 1](https://malwaresec.github.io/Stack-Based-Buffer-Overflow/) we focused on controlling execution flow and overwriting our return address using **free and open source tools**. In [Part 1](https://malwaresec.github.io/Stack-Based-Buffer-Overflow/) we were able to overwrite the return address with 0xdeadbeef meaning we had full control over execution, now let's use this to call our shell. 
+This is the second part to our Smashing the Stack series. In [Part 1](https://malwaresec.github.io/Stack-Based-Buffer-Overflow/) we focused on controlling execution flow and overwriting our return address using **free and open source tools**. In [Part 1](https://malwaresec.github.io/Stack-Based-Buffer-Overflow/), we were able to overwrite the return address with 0xdeadbeef meaning we had full control over execution, now let's use this to call our shell. 
 
 ![alt text](screenshot/15.png)
 

@@ -1,4 +1,5 @@
-# Smashing the Stack Part 2 - Building the ROP Chain
+# Smashing the Stack Part 2 - Building the ROP Chain 
+[![HitCount](http://hits.dwyl.io/MalwareSec/Building-the-ROP-Chain.svg)](http://hits.dwyl.io/MalwareSec/Building-the-ROP-Chain)
 ### By: Danny Colmenares 
 ### Twitter: @malware_sec
 

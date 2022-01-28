@@ -1,7 +1,6 @@
 # Smashing the Stack Part 2 - Building the ROP Chain 
-[![HitCount](http://hits.dwyl.io/MalwareSec/Building-the-ROP-Chain.svg)](http://hits.dwyl.io/MalwareSec/Building-the-ROP-Chain) ![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat) [![start with why](https://img.shields.io/badge/Follow%20Me-@MalwareSec-brightgreen.svg?style=flat)](https://twitter.com/malware_sec)
+
 ### By: Danny Colmenares 
-### Twitter: @malware_sec
 
 ## Welcome back! 
 This is the second part to our Smashing the Stack series. In [Part 1](https://malwaresec.github.io/Stack-Based-Buffer-Overflow/) we focused on controlling execution flow and overwriting our return address using **free and open source tools**. We were able to overwrite the return address of our executable with 0xdeadbeef meaning we had full execution control, now let's use this to call our shell. 
